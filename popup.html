@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      width: 320px;
+      max-height: 400px;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 13px;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .header {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      gap: 8px;
+    }
+    .header button {
+      padding: 4px 10px;
+      font-size: 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #fff;
+      cursor: pointer;
+    }
+    .header button:hover {
+      background: #f5f5f5;
+    }
+    .header button.primary {
+      background: #4CAF50;
+      color: white;
+      border-color: #4CAF50;
+    }
+    .header button.primary:hover {
+      background: #43a047;
+    }
+    .tab-list {
+      flex: 1;
+      overflow-y: auto;
+      max-height: 300px;
+    }
+    .tab-item {
+      display: flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-bottom: 1px solid #f0f0f0;
+      cursor: pointer;
+    }
+    .tab-item:hover {
+      background: #f9f9f9;
+    }
+    .tab-item.active {
+      background: #e3f2fd;
+    }
+    .tab-item input {
+      margin-right: 10px;
+    }
+    .tab-title {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .status {
+      padding: 10px 12px;
+      text-align: center;
+      border-top: 1px solid #e0e0e0;
+      background: #f5f5f5;
+    }
+    .status.success {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <button id="selectAll">全選択</button>
+    <button id="selectNone">全解除</button>
+    <button id="copy" class="primary">コピー</button>
+  </div>
+  <div id="tabList" class="tab-list"></div>
+  <div id="status" class="status">タブを選択してコピー</div>
+  <script src="popup.js"></script>
+</body>
+</html>
