@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const selectNoneBtn = document.getElementById('selectNone');
 
   let tabs = [];
+  const selectedIndexes = new Set();
+  let lastClickedIndex = null;
 
   // タブ一覧を取得して表示
   tabs = await chrome.tabs.query({ currentWindow: true });
@@ -13,42 +15,53 @@ document.addEventListener('DOMContentLoaded', async () => {
   tabs.forEach((tab, index) => {
     const item = document.createElement('div');
     item.className = 'tab-item' + (tab.active ? ' active' : '');
+    item.dataset.index = String(index);
     item.innerHTML = `
-      <input type="checkbox" ${tab.active ? 'checked' : ''}>
       <span class="tab-title">${escapeHtml(tab.title || tab.url)}</span>
     `;
-    item.addEventListener('click', (e) => {
-      if (e.target.tagName !== 'INPUT') {
-        const checkbox = item.querySelector('input');
-        checkbox.checked = !checkbox.checked;
+
+    if (tab.active) {
+      selectedIndexes.add(index);
+    }
+
+    item.addEventListener('click', event => {
+      const isSelected = selectedIndexes.has(index);
+      const shouldSelect = !isSelected;
+
+      if (event.shiftKey && lastClickedIndex !== null && lastClickedIndex !== index) {
+        setRangeSelection(lastClickedIndex, index, shouldSelect);
+      } else {
+        setSelection(index, shouldSelect);
       }
+
+      lastClickedIndex = index;
+      renderSelection();
       updateStatus();
     });
+
     tabListEl.appendChild(item);
   });
 
   // 全選択
   selectAllBtn.addEventListener('click', () => {
-    document.querySelectorAll('.tab-item input').forEach(cb => cb.checked = true);
+    tabs.forEach((_, index) => selectedIndexes.add(index));
+    renderSelection();
     updateStatus();
   });
 
   // 全解除
   selectNoneBtn.addEventListener('click', () => {
-    document.querySelectorAll('.tab-item input').forEach(cb => cb.checked = false);
+    selectedIndexes.clear();
+    renderSelection();
     updateStatus();
   });
 
   // コピー
   copyBtn.addEventListener('click', async () => {
-    const checkboxes = document.querySelectorAll('.tab-item input');
-    const selectedUrls = [];
-
-    checkboxes.forEach((cb, index) => {
-      if (cb.checked) {
-        selectedUrls.push(tabs[index].url);
-      }
-    });
+    const selectedUrls = Array.from(selectedIndexes)
+      .sort((a, b) => a - b)
+      .map(index => tabs[index].url)
+      .filter(Boolean);
 
     if (selectedUrls.length === 0) {
       statusEl.textContent = 'タブを選択してください';
@@ -66,9 +79,31 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   function updateStatus() {
-    const count = document.querySelectorAll('.tab-item input:checked').length;
-    statusEl.textContent = `${count}件選択中`;
+    statusEl.textContent = `${selectedIndexes.size}件選択中`;
     statusEl.className = 'status';
+  }
+
+  function setSelection(index, selected) {
+    if (selected) {
+      selectedIndexes.add(index);
+      return;
+    }
+    selectedIndexes.delete(index);
+  }
+
+  function setRangeSelection(from, to, selected) {
+    const start = Math.min(from, to);
+    const end = Math.max(from, to);
+    for (let index = start; index <= end; index += 1) {
+      setSelection(index, selected);
+    }
+  }
+
+  function renderSelection() {
+    document.querySelectorAll('.tab-item').forEach(item => {
+      const index = Number(item.dataset.index);
+      item.classList.toggle('selected', selectedIndexes.has(index));
+    });
   }
 
   function escapeHtml(text) {
@@ -77,5 +112,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     return div.innerHTML;
   }
 
+  renderSelection();
   updateStatus();
 });
