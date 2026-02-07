@@ -5,19 +5,21 @@
   <style>
     body {
       width: 320px;
-      max-height: 400px;
+      height: 420px;
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, sans-serif;
       font-size: 13px;
       margin: 0;
       display: flex;
       flex-direction: column;
+      overflow: hidden;
     }
     .header {
       padding: 10px 12px;
       border-bottom: 1px solid #e0e0e0;
       display: flex;
       gap: 8px;
+      flex-shrink: 0;
     }
     .header button {
       padding: 4px 10px;
@@ -38,10 +40,68 @@
     .header button.primary:hover {
       background: #43a047;
     }
+    .group-filter {
+      padding: 6px 12px;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 6px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      background: #fafafa;
+      flex-shrink: 0;
+    }
+    .group-filter:empty {
+      display: none;
+    }
+    .group-filter button {
+      padding: 3px 8px;
+      font-size: 11px;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      background: #fff;
+      cursor: pointer;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .group-filter button:hover {
+      background: #f0f0f0;
+    }
+    .group-filter button.active-filter {
+      background: #e3f2fd;
+      border-color: #90caf9;
+      font-weight: 600;
+    }
+    .group-count {
+      display: inline-flex;
+      min-width: 14px;
+      height: 14px;
+      padding: 0 4px;
+      border-radius: 999px;
+      background: #eeeeee;
+      color: #555;
+      font-size: 10px;
+      line-height: 14px;
+      justify-content: center;
+      box-sizing: border-box;
+    }
+    .group-filter button.active-filter .group-count {
+      background: #bbdefb;
+      color: #0d47a1;
+    }
+    .group-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
     .tab-list {
       flex: 1;
+      min-height: 0;
       overflow-y: auto;
-      max-height: 300px;
+      overflow-x: hidden;
     }
     .tab-item {
       display: flex;
@@ -73,6 +133,7 @@
       text-align: center;
       border-top: 1px solid #e0e0e0;
       background: #f5f5f5;
+      flex-shrink: 0;
     }
     .status.success {
       background: #e8f5e9;
@@ -86,6 +147,7 @@
     <button id="selectNone">全解除</button>
     <button id="copy" class="primary">コピー</button>
   </div>
+  <div id="groupFilter" class="group-filter"></div>
   <div id="tabList" class="tab-list"></div>
   <div id="status" class="status">タブを選択してコピー</div>
   <script src="popup.js"></script>
