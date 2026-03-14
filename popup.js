@@ -72,8 +72,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     allBtn.appendChild(createCountBadge(tabs.length));
     allBtn.addEventListener('click', () => {
       activeGroupFilter = null;
+      selectAllVisible();
       renderGroupFilter();
       renderTabVisibility();
+      renderSelection();
       updateStatus();
     });
     groupFilterEl.appendChild(allBtn);
@@ -92,8 +94,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       btn.className = activeGroupFilter === groupId ? 'active-filter' : '';
       btn.addEventListener('click', () => {
         activeGroupFilter = groupId;
+        selectAllVisible();
         renderGroupFilter();
         renderTabVisibility();
+        renderSelection();
         updateStatus();
       });
       groupFilterEl.appendChild(btn);
@@ -107,8 +111,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       btn.className = activeGroupFilter === -1 ? 'active-filter' : '';
       btn.addEventListener('click', () => {
         activeGroupFilter = -1;
+        selectAllVisible();
         renderGroupFilter();
         renderTabVisibility();
+        renderSelection();
         updateStatus();
       });
       groupFilterEl.appendChild(btn);
@@ -120,6 +126,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     badge.className = 'group-count';
     badge.textContent = String(count);
     return badge;
+  }
+
+  // フィルタ切替時に表示対象タブを全選択
+  function selectAllVisible() {
+    selectedIndexes.clear();
+    tabs.forEach((_, index) => {
+      if (isVisibleIndex(index)) selectedIndexes.add(index);
+    });
   }
 
   // フィルタに合致するインデックスかどうか
